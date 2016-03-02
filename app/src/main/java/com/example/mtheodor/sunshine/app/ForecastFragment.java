@@ -1,16 +1,19 @@
 package com.example.mtheodor.sunshine.app;
 
+import android.content.Context;
 import android.os.AsyncTask;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,7 +58,7 @@ public class ForecastFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.forecast_fragment, container, false);
 
-        List<String> weekForecast = getSampleForecast();
+        final List<String> weekForecast = getSampleForecast();
         forecastAdapter = new ArrayAdapter<>(
                 getActivity(),
                 R.layout.list_item_forecast,
@@ -65,6 +68,17 @@ public class ForecastFragment extends Fragment {
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(forecastAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Context context = getActivity();
+                int duration = Toast.LENGTH_SHORT;
+                String text = weekForecast.get(position);
+
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+            }
+        });
 
         return rootView;
     }
