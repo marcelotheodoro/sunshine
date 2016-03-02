@@ -1,6 +1,6 @@
 package com.example.mtheodor.sunshine.app;
 
-import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -56,7 +56,7 @@ public class ForecastFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.forecast_fragment, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_forecast, container, false);
 
         final List<String> weekForecast = getSampleForecast();
         forecastAdapter = new ArrayAdapter<>(
@@ -71,12 +71,12 @@ public class ForecastFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Context context = getActivity();
-                int duration = Toast.LENGTH_SHORT;
-                String text = weekForecast.get(position);
+                String forecast = weekForecast.get(position);
+                Toast.makeText(getActivity(), forecast, Toast.LENGTH_SHORT).show();
 
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
+                Intent detailIntent = new Intent(getActivity(), DetailActivity.class)
+                                        .putExtra(Intent.EXTRA_TEXT, forecast);
+                startActivity(detailIntent);
             }
         });
 
