@@ -7,14 +7,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 public class DetailActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new DetailActivityFragment())
+                    .add(R.id.container, new DetailFragment())
                     .commit();
         }
     }
@@ -41,4 +40,5 @@ public class DetailActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
 }
