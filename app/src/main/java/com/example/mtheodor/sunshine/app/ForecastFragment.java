@@ -47,7 +47,7 @@ public class ForecastFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         int id = menuItem.getItemId();
         if (id == R.id.action_refresh) {
-            refreshAction();
+            updateWeather();
             return true;
         }
 
@@ -86,23 +86,26 @@ public class ForecastFragment extends Fragment {
     }
 
     private List<String> getSampleForecast() {
-        String[] data = {
-                "Mon 6/23 - Sunny - 31/17"
-        };
-        return formatToAdapter(data);
+        return formatToAdapter(new String[] {});
     }
 
     private List<String> formatToAdapter(String[] data) {
         return new ArrayList<>(Arrays.asList(data));
     }
 
-    private void refreshAction() {
+    private void updateWeather() {
         new FetchWeatherTask().execute(getPostalCode());
     }
 
     private String getPostalCode() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         return sharedPreferences.getString(getString(SettingsActivity.LOCATION), "");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
     }
 
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
