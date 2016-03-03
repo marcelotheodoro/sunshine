@@ -8,4 +8,10 @@
     <string name="pref_general_location">Location</string>
     <string name="pref_general_location_key">location</string>
     <string name="pref_general_location_default_value">94043</string>
+
+    <string name="pref_general_units">Temperature unit</string>
+    <string name="pref_general_units_key">unit</string>
+    <string name="pref_general_unit_default_value">metric</string>
+    <string name="action_map">Location Map</string>
+
 </resources>

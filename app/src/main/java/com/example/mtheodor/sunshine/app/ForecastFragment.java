@@ -94,12 +94,17 @@ public class ForecastFragment extends Fragment {
     }
 
     private void updateWeather() {
-        new FetchWeatherTask().execute(getPostalCode());
+        new FetchWeatherTask().execute(getPostalCode(), getUnits());
     }
 
     private String getPostalCode() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         return sharedPreferences.getString(getString(SettingsActivity.LOCATION), "");
+    }
+
+    private String getUnits() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        return sharedPreferences.getString(getString(SettingsActivity.UNITS), "");
     }
 
     @Override
@@ -111,7 +116,7 @@ public class ForecastFragment extends Fragment {
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
         @Override
         protected String[] doInBackground(String... params) {
-            return new WeatherForecastRepository(params[0]).fetch();
+            return new WeatherForecastRepository(params[0], params[1]).fetch();
         }
 
         @Override

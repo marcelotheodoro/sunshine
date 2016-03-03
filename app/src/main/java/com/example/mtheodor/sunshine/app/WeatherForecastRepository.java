@@ -23,9 +23,11 @@ public class WeatherForecastRepository {
 
     private final String LOG_TAG = this.getClass().getSimpleName();
     private final String postalCode;
+    private final String units;
 
-    public WeatherForecastRepository(String postalCode) {
+    public WeatherForecastRepository(String postalCode, String units) {
         this.postalCode = postalCode;
+        this.units = units;
     }
 
     public String[] fetch() {
@@ -217,7 +219,7 @@ public class WeatherForecastRepository {
         Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
                 .appendQueryParameter(QUERY_PARAM, postalCode + ",usa")
                 .appendQueryParameter(FORMAT_PARAM, "json")
-                .appendQueryParameter(UNIT_PARAM, "metric")
+                .appendQueryParameter(UNIT_PARAM, units)
                 .appendQueryParameter(DAYS_PARAM, Integer.toString(daysCount))
                 .appendQueryParameter(APP_TOKEN_PARAM, Configuration.OPEN_WEATHER_API_KEY)
                 .build();

@@ -19,6 +19,7 @@ public class SettingsActivity extends PreferenceActivity
         implements Preference.OnPreferenceChangeListener {
 
     public static final int LOCATION = R.string.pref_general_location_key;
+    public static final int UNITS = R.string.pref_general_units_key;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -29,6 +30,7 @@ public class SettingsActivity extends PreferenceActivity
         // For all preferences, attach an OnPreferenceChangeListener so the UI summary can be
         // updated when the preference changes.
         bindPreferenceSummaryToValue(findPreference(getString(LOCATION)));
+        bindPreferenceSummaryToValue(findPreference(getString(UNITS)));
     }
 
     /**

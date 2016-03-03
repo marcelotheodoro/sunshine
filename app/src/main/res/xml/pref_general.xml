@@ -3,6 +3,12 @@
     <EditTextPreference
         android:key="@string/pref_general_location_key"
         android:defaultValue="@string/pref_general_location_default_value"
-        android:title="@string/pref_general_location"
-        ></EditTextPreference>
+        android:title="@string/pref_general_location"></EditTextPreference>
+
+    <ListPreference
+        android:title="@string/pref_general_units"
+        android:key="@string/pref_general_units_key"
+        android:defaultValue="@string/pref_general_location_default_value"
+        android:entries="@array/pref_general_unit_options"
+        android:entryValues="@array/pref_general_unit_values"></ListPreference>
 </PreferenceScreen>
