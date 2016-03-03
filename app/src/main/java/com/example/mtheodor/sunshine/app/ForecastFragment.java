@@ -1,8 +1,10 @@
 package com.example.mtheodor.sunshine.app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -95,8 +97,12 @@ public class ForecastFragment extends Fragment {
     }
 
     private void refreshAction() {
-        String postalCode = "94043";
-        new FetchWeatherTask().execute(postalCode);
+        new FetchWeatherTask().execute(getPostalCode());
+    }
+
+    private String getPostalCode() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        return sharedPreferences.getString(getString(SettingsActivity.LOCATION), "");
     }
 
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {

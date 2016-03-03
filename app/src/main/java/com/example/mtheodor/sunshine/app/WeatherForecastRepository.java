@@ -167,7 +167,6 @@ public class WeatherForecastRepository {
             }
         }
 
-        Log.i(LOG_TAG, forecastJsonStr);
         return forecastJsonStr;
     }
 
