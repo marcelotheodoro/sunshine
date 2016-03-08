@@ -2,7 +2,6 @@ package com.example.mtheodor.sunshine.app;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -94,7 +93,7 @@ public class ForecastFragment extends Fragment {
     }
 
     private void updateWeather() {
-        new FetchWeatherTask().execute(getPostalCode(), getUnits());
+        new FetchWeatherTask(getActivity(), forecastAdapter).execute(getPostalCode(), getUnits());
     }
 
     private String getPostalCode() {
@@ -111,25 +110,5 @@ public class ForecastFragment extends Fragment {
     public void onStart() {
         super.onStart();
         updateWeather();
-    }
-
-    public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
-        @Override
-        protected String[] doInBackground(String... params) {
-            return new WeatherForecastRepository(params[0], params[1]).fetch();
-        }
-
-        @Override
-        protected void onPostExecute(String[] forecast) {
-            if (forecast == null) {
-                return;
-            }
-
-            forecastAdapter.clear();
-            List<String> weeklyForecast = formatToAdapter(forecast);
-            for (String dailyForecast: weeklyForecast) {
-                forecastAdapter.add(dailyForecast);
-            }
-        }
     }
 }
