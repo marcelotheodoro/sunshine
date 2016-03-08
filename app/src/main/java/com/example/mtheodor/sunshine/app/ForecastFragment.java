@@ -1,20 +1,23 @@
 package com.example.mtheodor.sunshine.app;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
+
+import com.example.mtheodor.sunshine.app.data.WeatherContract;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,12 +26,14 @@ import java.util.List;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class ForecastFragment extends Fragment {
+public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    protected ArrayAdapter<String> forecastAdapter;
+    private static final int FORECAST_LOADER = 0;
+
+    protected ForecastAdapter mForecastAdapter;
 
     public ForecastFragment() {
-        forecastAdapter = null;
+        mForecastAdapter = null;
     }
 
     @Override
@@ -59,41 +64,23 @@ public class ForecastFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_forecast, container, false);
 
-        final List<String> weekForecast = getSampleForecast();
-        forecastAdapter = new ArrayAdapter<>(
-                getActivity(),
-                R.layout.list_item_forecast,
-                R.id.list_item_forecast_textview,
-                weekForecast
-        );
+        mForecastAdapter = new ForecastAdapter(getActivity(), null, 0);
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
-        listView.setAdapter(forecastAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String forecast = weekForecast.get(position);
-                Toast.makeText(getActivity(), forecast, Toast.LENGTH_SHORT).show();
-
-                Intent detailIntent = new Intent(getActivity(), DetailActivity.class)
-                                        .putExtra(Intent.EXTRA_TEXT, forecast);
-                startActivity(detailIntent);
-            }
-        });
+        listView.setAdapter(mForecastAdapter);
 
         return rootView;
     }
 
-    private List<String> getSampleForecast() {
-        return formatToAdapter(new String[] {});
-    }
 
     private List<String> formatToAdapter(String[] data) {
         return new ArrayList<>(Arrays.asList(data));
     }
 
     private void updateWeather() {
-        new FetchWeatherTask(getActivity(), forecastAdapter).execute(getPostalCode(), getUnits());
+        FetchWeatherTask weatherTask = new FetchWeatherTask(getActivity());
+        String location = Utility.getPreferredLocation(getActivity());
+        weatherTask.execute(location);
     }
 
     private String getPostalCode() {
@@ -110,5 +97,39 @@ public class ForecastFragment extends Fragment {
     public void onStart() {
         super.onStart();
         updateWeather();
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        getLoaderManager().initLoader(FORECAST_LOADER, null, this);
+        super.onActivityCreated(savedInstanceState);
+    }
+
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String locationSetting = Utility.getPreferredLocation(getActivity());
+
+        // Sort order:  Ascending, by date.
+        String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
+        Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
+                locationSetting, System.currentTimeMillis());
+
+        return new CursorLoader(getActivity(),
+                weatherForLocationUri,
+                null,
+                null,
+                null,
+                sortOrder);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        mForecastAdapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mForecastAdapter.swapCursor(null);
     }
 }
