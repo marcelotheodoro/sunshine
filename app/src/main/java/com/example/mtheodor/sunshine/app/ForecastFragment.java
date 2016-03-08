@@ -1,10 +1,9 @@
 package com.example.mtheodor.sunshine.app;
 
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -15,18 +14,49 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.mtheodor.sunshine.app.data.WeatherContract;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.example.mtheodor.sunshine.app.data.WeatherContract.WeatherEntry;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    // For the forecast view we're showing only a small subset of the stored data.
+    // Specify the columns we need.
+    private static final String[] FORECAST_COLUMNS = {
+            // In this case the id needs to be fully qualified with a table name, since
+            // the content provider joins the location & weather tables in the background
+            // (both have an _id column)
+            // On the one hand, that's annoying.  On the other, you can search the weather table
+            // using the location set by the user, which is only in the Location table.
+            // So the convenience is worth it.
+            WeatherEntry.TABLE_NAME + "." + WeatherEntry._ID,
+            WeatherEntry.COLUMN_DATE,
+            WeatherEntry.COLUMN_SHORT_DESC,
+            WeatherEntry.COLUMN_MAX_TEMP,
+            WeatherEntry.COLUMN_MIN_TEMP,
+            WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING,
+            WeatherEntry.COLUMN_WEATHER_ID,
+            WeatherContract.LocationEntry.COLUMN_COORD_LAT,
+            WeatherContract.LocationEntry.COLUMN_COORD_LONG
+    };
+
+    // These indices are tied to FORECAST_COLUMNS.  If FORECAST_COLUMNS changes, these
+    // must change.
+    static final int COL_WEATHER_ID = 0;
+    static final int COL_WEATHER_DATE = 1;
+    static final int COL_WEATHER_DESC = 2;
+    static final int COL_WEATHER_MAX_TEMP = 3;
+    static final int COL_WEATHER_MIN_TEMP = 4;
+    static final int COL_LOCATION_SETTING = 5;
+    static final int COL_WEATHER_CONDITION_ID = 6;
+    static final int COL_COORD_LAT = 7;
+    static final int COL_COORD_LONG = 8;
+
 
     private static final int FORECAST_LOADER = 0;
 
@@ -68,29 +98,29 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForecastAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+                if (cursor == null) {
+                    return;
+                }
+
+                String locationSetting = Utility.getPreferredLocation(getActivity());
+                Intent intent = new Intent(getActivity(), DetailActivity.class);
+                Uri detailUri = WeatherEntry.buildWeatherLocationWithDate(locationSetting, cursor.getLong(COL_WEATHER_DATE));
+                intent.setData(detailUri);
+                startActivity(intent);
+            }
+        });
 
         return rootView;
-    }
-
-
-    private List<String> formatToAdapter(String[] data) {
-        return new ArrayList<>(Arrays.asList(data));
     }
 
     private void updateWeather() {
         FetchWeatherTask weatherTask = new FetchWeatherTask(getActivity());
         String location = Utility.getPreferredLocation(getActivity());
         weatherTask.execute(location);
-    }
-
-    private String getPostalCode() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        return sharedPreferences.getString(getString(SettingsActivity.LOCATION), "");
-    }
-
-    private String getUnits() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        return sharedPreferences.getString(getString(SettingsActivity.UNITS), "");
     }
 
     @Override
@@ -111,13 +141,13 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         String locationSetting = Utility.getPreferredLocation(getActivity());
 
         // Sort order:  Ascending, by date.
-        String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
-        Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
+        String sortOrder = WeatherEntry.COLUMN_DATE + " ASC";
+        Uri weatherForLocationUri = WeatherEntry.buildWeatherLocationWithStartDate(
                 locationSetting, System.currentTimeMillis());
 
         return new CursorLoader(getActivity(),
                 weatherForLocationUri,
-                null,
+                FORECAST_COLUMNS,
                 null,
                 null,
                 sortOrder);

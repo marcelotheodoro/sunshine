@@ -14,5 +14,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="abc"
-        android:id="@+id/detail_intent_view" />
+        android:id="@+id/detail_text" />
 </RelativeLayout>
