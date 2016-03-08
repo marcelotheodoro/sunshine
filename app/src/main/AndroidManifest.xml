@@ -38,7 +38,9 @@
         </activity>
         <provider
             android:authorities="com.example.mtheodor.sunshine.app"
-            android:name=".data.WeatherProvider"/>
+            android:name=".data.WeatherProvider"
+            android:enabled="true"
+            android:exported="true"/>
     </application>
 
 </manifest>
