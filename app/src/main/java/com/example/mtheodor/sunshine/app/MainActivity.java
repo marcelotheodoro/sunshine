@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     @Override
     protected void onPause() {
         Log.v(LOG_TAG, "onPause");
