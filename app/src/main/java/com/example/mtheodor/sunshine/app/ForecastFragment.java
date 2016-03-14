@@ -1,6 +1,5 @@
 package com.example.mtheodor.sunshine.app;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -107,10 +106,9 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                 }
 
                 String locationSetting = Utility.getPreferredLocation(getActivity());
-                Intent intent = new Intent(getActivity(), DetailActivity.class);
-                Uri detailUri = WeatherEntry.buildWeatherLocationWithDate(locationSetting, cursor.getLong(COL_WEATHER_DATE));
-                intent.setData(detailUri);
-                startActivity(intent);
+                Callback activity = (Callback) getActivity();
+                long weatherDate = cursor.getLong(COL_WEATHER_DATE);
+                activity.onItemSelected(WeatherEntry.buildWeatherLocationWithDate(locationSetting, weatherDate));
             }
         });
 
