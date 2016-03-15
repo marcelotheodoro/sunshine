@@ -21,6 +21,9 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.text.format.Time;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Defines table and column names for the weather database.
  */
@@ -44,6 +47,8 @@ public class WeatherContract {
     public static final String PATH_WEATHER = "weather";
     public static final String PATH_LOCATION = "location";
 
+    public static final String DATE_FORMAT = "yyyyMMdd";
+
     // To make it easy to query for the exact date, we normalize all dates that go into
     // the database to the start of the the Julian day at UTC.
     public static long normalizeDate(long startDate) {
@@ -52,6 +57,18 @@ public class WeatherContract {
         time.set(startDate);
         int julianDay = Time.getJulianDay(startDate, time.gmtoff);
         return time.setJulianDay(julianDay);
+    }
+
+    /**
+     * Converts Date class to a String representation, used for easy comparison and database location
+     * @param date The input date
+     * @return a DB-friendly representation of the date using the format defined in DATE_FORMAT
+     */
+    public static String getDbDateString(Date date) {
+        // Because the API returns a unix timestamp (measured in seconds),
+        // it must be converted to milliseconds in order to be converted to valid date
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+        return sdf.format(date);
     }
 
     /*

@@ -3,12 +3,19 @@
     <EditTextPreference
         android:key="@string/pref_general_location_key"
         android:defaultValue="@string/pref_general_location_default_value"
-        android:title="@string/pref_general_location"></EditTextPreference>
+        android:title="@string/pref_general_location"/>
 
     <ListPreference
         android:title="@string/pref_general_units"
         android:key="@string/pref_general_units_key"
         android:defaultValue="@string/pref_general_location_default_value"
         android:entries="@array/pref_general_unit_options"
-        android:entryValues="@array/pref_general_unit_values"></ListPreference>
+        android:entryValues="@array/pref_general_unit_values"/>
+
+    <CheckBoxPreference
+        android:title="@string/pref_enable_notifications_label"
+        android:key="@string/pref_enable_notifications_key"
+        android:summaryOff="@string/pref_enable_notifications_false"
+        android:summaryOn="@string/pref_enable_notifications_true"
+        android:defaultValue="@string/pref_enable_notifications_default"/>
 </PreferenceScreen>
